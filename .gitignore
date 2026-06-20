@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Obsidian (vault로 열 경우)
+.obsidian/
