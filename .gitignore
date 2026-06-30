@@ -8,3 +8,6 @@
 
 # Obsidian (vault로 열 경우)
 .obsidian/
+
+# CDC 랩 - 원본 binlog 바이너리 (디코드용으로 꺼낸 것). *.decoded.sql 같은 결과물은 추적함
+분산시스템/CDC/**/binlog.??????
