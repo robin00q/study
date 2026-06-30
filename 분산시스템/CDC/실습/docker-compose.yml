@@ -1,0 +1,41 @@
+name: cdc-lab
+
+# CDC end-to-end 랩 (Debezium 공식 튜토리얼 구성)
+# [mysql] -> (connect = Kafka Connect + Debezium) -> [kafka]
+services:
+  zookeeper:
+    image: quay.io/debezium/zookeeper:2.7
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: quay.io/debezium/kafka:2.7
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      ZOOKEEPER_CONNECT: zookeeper:2181
+
+  mysql:
+    image: quay.io/debezium/example-mysql:2.7   # binlog 켜짐 + inventory DB 내장 + debezium 유저
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: debezium
+      MYSQL_USER: mysqluser
+      MYSQL_PASSWORD: mysqlpw
+
+  connect:
+    image: quay.io/debezium/connect:2.7
+    ports:
+      - "8083:8083"
+    depends_on:
+      - kafka
+      - mysql
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: "1"
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets    # ← 03/04에서 배운 커넥터 offset 저장 토픽
+      STATUS_STORAGE_TOPIC: my_connect_statuses
