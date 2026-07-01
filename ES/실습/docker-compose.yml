@@ -11,15 +11,18 @@
 #   curl localhost:9200/_cluster/health  → green/yellow/red
 #   Kibana → http://localhost:5601 → 좌측 메뉴 Dev Tools (REST 콘솔)
 #
-# ※ nori(한국어 형태소) 플러그인은 Lab 2(항목 10)에서 추가한다.
-#    지금은 기본 이미지로 충분.
+# ※ nori(한국어 형태소) 플러그인은 Dockerfile.es 에서 설치해 이미지에 구워둔다.
+#    변경 후 반영: docker compose up -d --build
 # ─────────────────────────────────────────────────────────────
 # 폴더명이 한글(실습)이라 프로젝트명 자동생성이 실패함 → 명시적으로 지정
 name: es-lab
 
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.18
+    build:
+      context: .
+      dockerfile: Dockerfile.es
+    image: es-lab-nori:7.17.18   # 빌드 결과 이미지 태그
     container_name: es-lab
     environment:
       - discovery.type=single-node

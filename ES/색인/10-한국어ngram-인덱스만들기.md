@@ -1,26 +1,83 @@
-# 10. 한국어 + ngram 인덱스 직접 만들기
+# ngram 인덱스 직접 만들기
 
-> 목표: 멀티필드(text/keyword/korean/ngram) 인덱스를 손으로 생성 · 학습항목 2-5 · 🧪 Lab 2
+---
 
-## 🤔 풀어볼 질문
-- [ ] nori 플러그인은 도커 ES에 어떻게 설치하나?
-- [ ] `subject`를 keyword/korean/ngram 멀티필드로 갖는 매핑을 어떻게 작성하나?
-- [ ] `[개정판] 맞바람`을 ngram과 korean(nori)에 각각 `_analyze`하면 토큰이 어떻게 다른가?
+## title-group-meta 를 만들어보자.
 
-## ✍️ 내가 정리한 내용
-<!-- 공부하며 채우기 -->
+---
 
-## 🧪 Lab 2
-- 목표: nori 포함 이미지 + `title-group-meta` 흉내 매핑 생성 → `_analyze` 비교
-- 준비되면 `../실습/`에서 함께 만든다.
-- 매핑/명령/결과 기록:
-  ```
-  
-  ```
+`PUT /title-group-meta`
 
-## ✅ 체크포인트
-- Q. `[개정판] 맞바람`의 ngram 토큰과 nori 토큰은 어떻게 다른가?
-- A. 
+```json
+{
+  "settings": {
+    "index.max_ngram_diff": 5,
+    "analysis": {
+      "tokenizer": {
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 5
+        }
+      },
+      "analyzer": {
+        "ngram_analyzer": {
+          "tokenizer": "ngram_tokenizer",
+          "filter": [
+            "lowercase"
+          ]
+        },
+        "korean": {
+          "type": "custom",
+          "tokenizer": "nori_tokenizer",
+          "filter": [
+            "lowercase"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "subject": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          },
+          "korean": {
+            "type": "text",
+            "analyzer": "korean"
+          },
+          "ngram": {
+            "type": "text",
+            "analyzer": "ngram_analyzer",
+            "search_analyzer": "standard"
+          }
+        }
+      }
+    }
+  }
+}
+```
 
-## 🔗 참고
-- 실제 인덱스 사실: [`00-참고자료-실제인덱스.md`](./00-참고자료-실제인덱스.md)
+## korean vs ngram _analyze 비교
+
+---
+
+**[개정판] 맞바람** 색인 시
+
+- korean(nori) : [개정, 판, 맞, 바람] - 4개, 부호/공백 제거된 의미 단위
+- ngram : [개, [개정, [개정판, ... - 26개, 대괄호/공백까지 포함
+
+## 검색어 "맞바람"이 필드별로 잡는 것
+
+---
+
+| 문서 | keyword | korean | ngram |
+| --- | --- | --- | --- |
+| 맞바람 | ✅ | ✅ | ✅ |
+| [개정판] 맞바람 | ❌ | ✅ | ✅ |
+| 맞 바람 | ❌ | ✅ | ❌(공백) |
+| 봄바람 | ❌ | ⚠️노이즈 | ❌ |
