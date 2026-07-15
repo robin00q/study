@@ -8,3 +8,6 @@
 
 # Obsidian (vault로 열 경우)
 .obsidian/
+
+# 실습 인증서 (개인키 포함, 커밋 금지)
+PROXY/실습/*/certs/
