@@ -20,9 +20,10 @@
 | 3 | HTTP 프록시 동작 — GET 대리요청 · CONNECT 터널(HTTPS) | 개념 | `ai-03-http-프록시-동작.md` |
 | 4 | SOCKS 프록시 — SOCKS5, `ssh -D` | 개념 | `ai-04-socks-프록시.md` |
 | 5 | 실습 A: forward 프록시 띄우기 (tinyproxy + curl) | 실습 | `ai-05-실습A-forward-proxy.md` |
-| 6 | 실습 B: SOCKS 프록시 (microsocks / `ssh -D`) | 실습 | `ai-06-실습B-socks-proxy.md` |
-| 7 | 실습 C: reverse 프록시 (nginx) | 실습 | `ai-07-실습C-reverse-proxy.md` |
-| 8 | 최종: pod에 프록시 띄우고 `port-forward`로 사용 | 실습 | `ai-08-최종-pod-프록시.md` |
+| 6 | 실습 C: reverse 프록시 (nginx) | 실습 | `ai-06-실습C-reverse-proxy.md` |
+| 7 | 최종: pod에 프록시 띄우고 `port-forward`로 사용 | 실습 | `ai-07-최종-pod-프록시.md` |
+
+> 실습 B(SOCKS 프록시)는 지금은 제외. SOCKS **개념**은 4단계에 있고, 실습이 필요할 때 다시 추가한다.
 
 ## 실습 준비물
 
