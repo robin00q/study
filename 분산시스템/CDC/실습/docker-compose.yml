@@ -39,3 +39,15 @@ services:
       CONFIG_STORAGE_TOPIC: my_connect_configs
       OFFSET_STORAGE_TOPIC: my_connect_offsets    # ← 03/04에서 배운 커넥터 offset 저장 토픽
       STATUS_STORAGE_TOPIC: my_connect_statuses
+  console:
+    image: docker.redpanda.com/redpandadata/console:latest   # 카프카/커넥터 관찰용 웹 UI (http://localhost:8080)
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kafka
+      - connect
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      CONNECT_ENABLED: "true"          # Kafka Connect 연동 (커넥터 UI 조회)
+      CONNECT_CLUSTERS_0_NAME: cdc-lab
+      CONNECT_CLUSTERS_0_URL: http://connect:8083
