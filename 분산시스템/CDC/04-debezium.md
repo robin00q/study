@@ -138,3 +138,14 @@ CDC 지연
 
 - GTID 가 켜져있으면(gtid_mode=ON) - GTID 기준으로 위치를 추적/재개한다. (failover 안전)
 - GTID 가 꺼져있으면 - binlog 파일명+position 으로 fallback 한다.
+
+## op 4 종 이벤트
+
+---
+
+| op | 트리거    | before | after | 특징                  |
+|----|--------|--------|-------|---------------------|
+| r  | 스냅샷    | null   | 값     |                     |
+| c  | INSERT | null   | 값     |                     |
+| u  | UPDATE | 값      | 값     | 양쪽 다 값이 있다. (diff)  |
+| d  | DELETE | 값      | null  | + tombstone 이벤트 추가 발행 |

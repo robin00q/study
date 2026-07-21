@@ -40,9 +40,9 @@ services:
       OFFSET_STORAGE_TOPIC: my_connect_offsets    # ← 03/04에서 배운 커넥터 offset 저장 토픽
       STATUS_STORAGE_TOPIC: my_connect_statuses
   console:
-    image: docker.redpanda.com/redpandadata/console:latest   # 카프카/커넥터 관찰용 웹 UI (http://localhost:8080)
+    image: docker.redpanda.com/redpandadata/console:latest   # 카프카/커넥터 관찰용 웹 UI (http://localhost:8085)
     ports:
-      - "8080:8080"
+      - "8085:8080"
     depends_on:
       - kafka
       - connect
