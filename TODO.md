@@ -1,0 +1,21 @@
+# 📚 나중에 깊이 공부할 것 (TODO)
+
+> 공부하다 "이건 나중에 제대로 파보자" 싶은 것들을 모아두는 백로그.
+
+## 분산 시스템 / CDC
+
+- [ ] **MySQL AUTO_INCREMENT 발급 시점 vs 커밋 가시성**
+  - 맥락: id는 INSERT 실행 시점에 박히지만, 다른 세션엔 COMMIT 시점에야 보임 → 발급 순서 ≠ 커밋 순서.
+  - 파볼 것: 트랜잭션 격리 수준(RR/SERIALIZABLE)이 왜 이 갭을 못 막는가, `innodb_autoinc_lock_mode`(0/1/2)의 차이, autocommit vs 명시적 트랜잭션에서의 동작 차이.
+  - 왜 중요: "id > last_seen" 워터마크 폴링(증분 ETL, 큐 테이블, Outbox 폴링)에서 데이터 누락(skip)을 일으키는 근본 원인. log-based CDC(LSN)가 이를 구조적으로 해결하는 이유와도 직결.
+  - 🧪 **직접 재현**: Docker로 MySQL 8 띄우고 두 세션으로 ① 롤백 시 id 갭 ② 워터마크 skip 시나리오 재현해보기. (Rancher Desktop 설치돼 있음 → 데몬만 켜면 됨)
+
+- [ ] **MySQL GTID vs binlog position (failover-safe resume)**
+  - 맥락: binlog position(`파일명:pos`)은 특정 서버에 종속 → failover로 replica가 승격되면 무의미. GTID(`server_uuid:seq`)는 복제 토폴로지 전역에서 고유 → 서버가 바뀌어도 이어서 읽기 가능.
+  - 파볼 것: GTID 형식과 gtid_executed **set(범위) 표현**, `gtid_mode` 설정, GTID가 커밋 시점에 부여되어 커밋 순서를 따른다는 점(auto_increment 갭이 없는 이유), Debezium이 GTID로 resume하는 방식.
+  - 왜 중요: HA 환경(primary+replica) CDC에서 장애 전환 시 끊김 없는 복구.
+
+- [ ] **CDC 타입 매핑과 타입 함정 (07 곁가지)**
+  - 맥락: 07(스키마와 데이터타입)에서 schema evolution만 다루고 값 변환 쪽은 스킵함.
+  - 파볼 것: 원본 DB 타입 ↔ Debezium/Kafka 타입 매핑 규칙, 자주 깨지는 것들 — timestamp/timezone(time.precision.mode), decimal 정밀도(decimal.handling.mode), NULL/default 처리.
+  - 왜 중요: 실무에서 sink 붙일 때 데이터 깨짐의 단골 원인. 필요해질 때(실제 파이프라인 구축) 레퍼런스 삼아 보면 됨.
